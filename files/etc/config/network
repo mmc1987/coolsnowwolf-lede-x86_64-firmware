@@ -1,0 +1,71 @@
+
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+	option ula_prefix 'fda6:5080:b975::/48'
+
+config interface 'lan'
+	option device 'eth0'
+	option proto 'static'
+	option ipaddr '192.168.1.1'
+	option netmask '255.255.255.0'
+	option ip6assign '60'
+	list dns '192.168.1.1'
+
+config interface 'wan'
+	option proto 'pppoe'
+	option device 'eth0'
+	option username '02106039152'
+	option password '123456'
+	option ipv6 'auto'
+	option mtu '1492'
+
+config interface 'WireGuard'
+	option proto 'wireguard'
+	option private_key '0IrEhg8OvpBQIkIKiUAN8fWV78dJLE9qeqRuNH18NVQ='
+	option listen_port '51820'
+	list addresses '192.168.9.1/24'
+
+config wireguard_WireGuard
+	option description 'peer0'
+	option public_key 'Oo/fa+wT78IerNFW7W9qExXmiXQRCc1nuEuRUUlUKAE='
+	option private_key 'EEYS3smnoM5n1N2Rg2uowNistBDkn0VbVSi8Jc7+6lk='
+	option preshared_key 'onZX4hTmsRUxDGo1WLyct8nJ51bmmcb71VkuGRZS480='
+	list allowed_ips '192.168.9.2/24'
+	option route_allowed_ips '1'
+	option endpoint_port '51820'
+	option persistent_keepalive '25'
+
+config wireguard_WireGuard
+	option description 'peer1'
+	option public_key 'SzoBDCSVVHRaoDGvxd8hI+TSaZNlvoZvHPyQw01QJGY='
+	option private_key 'qEjJytik0F6dYWatfVC//6nYYwifp6juTFGC/TZ1OWw='
+	option preshared_key 'naJQNs6A7nHWS7SxEWKCHKKVYSNJxqw4D6p6HZxaUQk='
+	option route_allowed_ips '1'
+	option endpoint_port '51820'
+	option persistent_keepalive '25'
+	list allowed_ips '192.168.9.3/24'
+
+config wireguard_WireGuard
+	option description 'peer2'
+	option public_key 'Oo/fa+wT78IerNFW7W9qExXmiXQRCc1nuEuRUUlUKAE='
+	option private_key 'EEYS3smnoM5n1N2Rg2uowNistBDkn0VbVSi8Jc7+6lk='
+	option preshared_key 'onZX4hTmsRUxDGo1WLyct8nJ51bmmcb71VkuGRZS480='
+	list allowed_ips '192.168.9.4/24'
+	option route_allowed_ips '1'
+	option endpoint_port '51820'
+	option persistent_keepalive '25'
+	
+config wireguard_WireGuard
+	option description 'peer3'
+	option public_key 'SzoBDCSVVHRaoDGvxd8hI+TSaZNlvoZvHPyQw01QJGY='
+	option private_key 'qEjJytik0F6dYWatfVC//6nYYwifp6juTFGC/TZ1OWw='
+	option preshared_key 'naJQNs6A7nHWS7SxEWKCHKKVYSNJxqw4D6p6HZxaUQk='
+	option route_allowed_ips '1'
+	option endpoint_port '51820'
+	option persistent_keepalive '25'
+	list allowed_ips '192.168.9.5/24'

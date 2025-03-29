@@ -134,7 +134,7 @@ config redirect
 	option name 'lxc.ubuntu'
 	option src 'wan'
 	option src_dport '22'
-	option dest_ip '192.168.1.110'
+	option dest_ip '192.168.1.111'
 	option dest_port '22'
 
 config redirect
@@ -150,6 +150,87 @@ config rule
 	option name 'Allow-WireGuard'
 	list proto 'udp'
 	option src 'wan'
-	option dest_port '51820'
+	option dest_port '55820'
 	option target 'ACCEPT'
+
+config redirect
+	option dest 'lan'
+	option target 'DNAT'
+	option name 'rustdesk'
+	option src 'wan'
+	option src_dport '21116'
+	option dest_ip '192.168.1.220'
+	option dest_port '21116'
+
+config redirect
+	option dest 'lan'
+	option target 'DNAT'
+	option name 'rustdeskserver'
+	option src 'wan'
+	option src_dport '21117'
+	option dest_ip '192.168.1.220'
+	option dest_port '21117'
+
+config rule
+	option name 'Allow-RustDesk'
+	option src 'wan'
+	option src_port '21114-21119'
+	option dest_port '21114-21119'
+	option target 'ACCEPT'
+
+config redirect
+	option dest 'lan'
+	option target 'DNAT'
+	option src 'wan'
+	option src_dport '3389'
+	option dest_ip '192.168.1.210'
+	option dest_port '3389'
+	option name 'win10_mstsc'
+
+config redirect
+	option dest 'lan'
+	option target 'DNAT'
+	option name 'ser2025_mstsc'
+	option src 'wan'
+	option src_dport '3389'
+	option dest_ip '192.168.1.215'
+	option dest_port '3389'
+
+config include 'wrtbwmon'
+	option type 'script'
+	option path '/etc/wrtbwmon.include'
+	option reload '1'
+
+config forwarding
+	option src 'wireguard'
+	option dest 'lan'
+
+config forwarding
+	option src 'lan'
+	option dest 'wireguard'
+
+config zone
+	option name 'wireguard'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'ACCEPT'
+	option mtu_fix '1'
+	option network 'WireGuard'
+
+config rule
+	option name 'Allow-WireGuard'
+	option src 'wan'
+	option dest 'wireguard'
+	option proto 'udp'
+	option dest_port '55820'
+	option target 'ACCEPT'
+
+config include 'zerotier'
+	option type 'script'
+	option path '/usr/share/zerotier/firewall.include'
+	option reload '1'
+
+config forwarding
+	option src 'wireguard'
+	option dest 'lan'
 

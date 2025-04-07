@@ -18,3 +18,22 @@
 
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
+
+
+
+git clone "https://${REPO_TOKEN}@github.com/mmc1987/Openwrt_etc.git" || error_exit "克隆仓库失败"
+log "私有仓库克隆完成"
+
+# 检查源目录和目标目录
+check_directory "Openwrt_etc/backup-OpenWrt"
+create_directory "files"
+
+# 复制文件
+log "开始复制文件"
+cp -rv Openwrt_etc/backup-OpenWrt/* files/ || error_exit "复制文件失败"
+log "文件复制完成"
+
+# 清理临时文件
+log "清理临时文件"
+rm -rf Openwrt_etc
+log "清理完成"

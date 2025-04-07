@@ -27,6 +27,7 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
+  REPO_TOKEN: ${{ secrets.ACCESS_KEY }}
 
 jobs:
   build:

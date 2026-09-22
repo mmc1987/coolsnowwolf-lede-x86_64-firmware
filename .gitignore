@@ -1,0 +1,2 @@
+# 路由器配置（含密钥）由 diy-part2.sh 从私有仓库 Openwrt_etc 注入，不要提交到本仓库
+files/

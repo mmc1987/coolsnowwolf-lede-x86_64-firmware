@@ -100,7 +100,7 @@ jobs:
 
     - name: Load custom configuration
       env:
-        FILES_TOKEN: ${{ secrets.FILES_TOKEN }}
+        FILES_TOKEN: ${{ secrets.ACCESS_KEY }}
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config

@@ -5,10 +5,10 @@
 # 路由器配置（含 WireGuard / ZeroTier / PPPoE / DDNS 凭据）不再存放在本仓库，
 # 而是从私有仓库 mmc1987/Openwrt_etc 拉取后注入 openwrt/files/。
 #
-# 需要的 secret：FILES_TOKEN
-#   GitHub → Settings → Developer settings → Fine-grained tokens
-#   只授予 Openwrt_etc 一个仓库、Contents: Read-only
-#   再添加到本仓库 Actions → Secrets and variables → Actions → Repository secrets
+# 需要的 secret：FILES_TOKEN（本仓库 workflow 目前用 ACCESS_KEY 那个 PAT 提供）
+#   推荐单独建 fine-grained token：GitHub → Settings → Developer settings →
+#   Fine-grained tokens，只授予 Openwrt_etc 一个仓库、Contents: Read-only，
+#   再加到 Actions → Secrets and variables → Actions → Repository secrets
 # 未配置该 secret 时跳过注入，固件按 lede 默认配置出厂（不会导致编译失败）。
 #
 

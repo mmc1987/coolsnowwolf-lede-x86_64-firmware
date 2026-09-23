@@ -1,0 +1,60 @@
+name: Kconfig Probe
+
+# 只做 ./scripts/feeds + make defconfig，然后打印 vsftpd 一族在生成 kconfig
+# 里的 select 关系，用来定位 opkg check_data_file_clashes 的拉取者。不编译固件。
+
+on:
+  workflow_dispatch:
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  TZ: Asia/Shanghai
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install host dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo -E apt -y update
+        sudo -E apt -y install build-essential libncurses-dev zlib1g-dev gawk file \
+          rsync python3 python3-setuptools python3-pyelftools subversion git swig \
+          clang cmake cpio flex bison libelf-dev libssl-dev pkgconf unzip wget which
+
+    - name: Clone source and feeds
+      run: |
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        cd openwrt
+        cp -f $GITHUB_WORKSPACE/.config .config
+        ./scripts/feeds update -a > /dev/null
+        ./scripts/feeds install -a > /dev/null
+
+    - name: Resolve kconfig
+      run: |
+        cd openwrt
+        cp .config .config.seed
+        make defconfig < /dev/null
+        echo "=== defconfig 对 vsftpd 一族的最终取值 ==="
+        grep -E 'vsftpd|VSFTPD' .config || echo "(无)"
+        echo "=== 相对 seed 的变化 ==="
+        diff -a .config.seed .config | grep -E '^[<>].*vsftpd' || echo "(无变化)"
+
+    - name: Find who selects these packages
+      run: |
+        cd openwrt
+        for sym in PACKAGE_vsftpd PACKAGE_vsftpd_alt PACKAGE_vsftpd-alt PACKAGE_luci_app_vsftpd PACKAGE_luci-app-vsftpd; do
+          echo "--- select $sym 的父包 ---"
+          awk -v target="$sym" '
+            /^config PACKAGE_/ { parent = $2 }
+            $0 ~ ("select +" target "([[:space:]]|$)") { print parent }
+          ' tmp/.config-package.in | sort -u
+        done
+        echo "--- 生成的 kconfig 里 vsftpd 相关块 ---"
+        grep -nE 'config PACKAGE_.*vsftpd|select PACKAGE_.*vsftpd|default .*vsftpd' tmp/.config-package.in | head -40

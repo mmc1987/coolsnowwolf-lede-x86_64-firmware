@@ -25,9 +25,9 @@ env:
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
-  # 固件里会烧入 WireGuard/ZeroTier/DDNS 凭据，公开 Release 等于把密钥公开发布。
-  # 仓库转为 private 后再改成 true。
-  UPLOAD_RELEASE: false
+  # 固件里烧着 WireGuard/ZeroTier/DDNS/PPPoE 凭据，所以下面的 release 步骤发成 draft：
+  # 只有你（及协作者）能看到并下载，公开仓库的访客看不到，Actions 仍按 public 免费无限分钟计。
+  UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
 jobs:
@@ -178,6 +178,7 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
+        draft: true
         files: ${{ env.FIRMWARE }}/*
 
     - name: Delete workflow runs

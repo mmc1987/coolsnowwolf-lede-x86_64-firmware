@@ -46,10 +46,18 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
           docker image prune -f
-          sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
+          sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /usr/local/lib/android
+          # Ubuntu 24.04 的归档源是 /etc/apt/sources.list.d/ubuntu.sources，
+          # 整目录删除会让 apt 只剩空索引，后续 install 全部 "Unable to locate package"
+          sudo -E find /etc/apt/sources.list.d -maxdepth 1 -type f ! -name 'ubuntu.sources' -delete
           sudo -E apt-mark hold grub-efi-amd64-signed
           sudo -E apt update
-          sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
+          apt-cache pkgnames | grep -qx build-essential || { echo "::error::apt 索引为空，编译依赖无法安装"; exit 1; }
+          # 逐个 glob 清理：apt 只要有单个 pattern 匹配不到包就整体退出 100，
+          # 而 24.04 镜像里 ghc/zulu/dotnet/openjdk/mongodb 等已不再预装
+          for pkg in 'azure-cli*' 'docker*' 'ghc*' 'zulu*' 'llvm*' 'firefox*' 'google*' 'dotnet*' 'powershell*' 'openjdk*' 'mysql*' 'php*' 'mongodb*' 'snap*'; do
+            sudo -E apt -y purge --allow-change-held-packages "$pkg" >/dev/null 2>&1 || true
+          done
           sudo -E apt -y full-upgrade
           sudo -E apt -y install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache clang cmake cpio curl device-tree-compiler flex gawk gcc-multilib g++-multilib gettext genisoimage git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses-dev libpython3-dev libreadline-dev libssl-dev libtool llvm lrzsz msmtp ninja-build p7zip p7zip-full patch pkgconf python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
           sudo -E systemctl daemon-reload
